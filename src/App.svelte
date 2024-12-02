@@ -6,7 +6,9 @@
   window.getState = () => gamestate;
 
   let name = "Shape Clicker";
+  let currentLevel = gamestate.data.level;
   let clicks = gamestate.data.shapesClicked;
+  let currentMultiplier = gamestate.data.multiplier;
 
   const updateClicksDisplay = () => {
     gamestate.click();
@@ -18,12 +20,30 @@
   <main>
     <h1>{name}</h1>
     <stats-container>
-      <button class="restart-game" on:click={() => gamestate.reset()}
+      <h3>Level: {currentLevel}</h3>
+      <h3>Multiplier: {currentMultiplier}</h3>
+      <p>Shapes: {clicks}</p>
+
+      <button
+        on:click={() => {
+          updateClicksDisplay();
+          currentLevel = gamestate.data.level;
+          currentMultiplier = gamestate.data.multiplier;
+        }}
+        >Click Me
+      </button>
+
+      <button
+        class="restart-game"
+        on:click={() => {
+          gamestate.reset();
+          clicks = gamestate.data.shapesClicked;
+          currentLevel = gamestate.data.level;
+          currentMultiplier = gamestate.data.multiplier;
+        }}
         >Restart the Game
       </button>
-      <p>Clicks: {clicks}</p>
     </stats-container>
-    <button on:click={updateClicksDisplay}>Click Me</button>
   </main>
 </body>
 

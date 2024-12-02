@@ -1,6 +1,3 @@
-
-export const QUOTA = [50, 500, 10000, 300000];
-  
 export const SHAPES = {
   SQUARE: "SQUARE",
   PENTAGON: "PENTAGON",
@@ -15,20 +12,21 @@ export class GameState {
   data: {
     level: number;
     startingShape: string;
-    shapesPerClicks: number;
     shapesClicked: number;
     achievements: any[];
-    multiplier: number;
+    multiplier: number,
+    quota: number;
   };
   constructor() {
     this.data = {
       level: 0,
       startingShape: SHAPES.SQUARE,
-      shapesPerClicks: 1,
       shapesClicked: 0,
       achievements: [],
-      multiplier: 1.0,
+      multiplier: 0.0,
+      quota: 15,
     };
+    
     this.load(this.data);
   }
 
@@ -47,36 +45,26 @@ export class GameState {
     this.data = {
       level: 0,
       startingShape: SHAPES.SQUARE,
-      shapesPerClicks: 1,
       shapesClicked: 0,
       achievements: [],
-      multiplier: 1.0,
+      multiplier: 0.0,
+      quota: 15,
     };
-    
-    console.log("Starting State has been reset.");
     return this;
   }
 
   click() {
-    this.data.shapesClicked++;
-    this.save();
-  }
-
-  multiply() {
-    this.data.shapesClicked *= this.data.multiplier;
-    this.save();
-  }
-
-  trackLevel() {
-    for (let i = this.data.level; i < QUOTA.length; i++) {
-      if (this.data.shapesClicked >= QUOTA[i]) {
-        this.data.level++;
-        this.data.multiplier *= (i + 1.0) * 2.5;
-        this.save();
-      } else {
-        break;
-      }
+    Math.round(this.data.shapesClicked++);
+    
+    if (this.data.shapesClicked >= this.data.quota) {
+      this.data.quota *= 3;
+      this.data.level++;
+      this.data.multiplier += 0.5;
+      console.log("New Quota:", this.data.quota);
+      console.log("REAL multiplier", this.data.multiplier)
     }
+    Math.round(this.data.shapesClicked += this.data.multiplier);
+    this.save();
     return this;
   }
 }

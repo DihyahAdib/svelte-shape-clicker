@@ -8,6 +8,9 @@ html {
 	background-color: #717171;
 	background-image: url(/nnnoise.svg);
 	background-repeat: repeat;
+	-webkit-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
 }
 
 main-container {
@@ -16,7 +19,19 @@ main-container {
 }
 
 main {
-	width: 50%;
+	width: 40%;
+	height: 85vh;
+	padding: 2em;
+	margin: 1em;
+	text-align: center;
+	color: white;
+	background-color: rgb(47, 47, 47);
+	border-radius: 10px;
+	font-family: "Segoe UI", "Helvetica Neue", sans-serif;
+}
+
+main-game {
+	width: 60%;
 	height: 85vh;
 	padding: 2em;
 	margin: 1em;

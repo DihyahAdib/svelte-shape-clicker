@@ -1,11 +1,13 @@
 <!-- app.svelte file -->
 <script lang="ts">
+  import { fade, fly } from "svelte/transition";
   let level = 0;
   let shapesClicked = 0;
   let achievements = 0;
   let multiplier = 0.0;
   let quota = 15;
   let currentQuo = 0;
+  let isOpen = false;
 
   const loadState = () => {
     const savedState = JSON.parse(
@@ -37,6 +39,27 @@
     );
   };
 
+  function formatPlaceValue(number: number): string {
+    const formatter = new Intl.NumberFormat("en-US", {
+      maximumFractionDigits: 2,
+    });
+
+    if (number >= 1_000_000_000_000_000_000) {
+      return formatter.format(number / 1_000_000_000_000_000_000) + "Qn"; // Quintillion
+    } else if (number >= 1_000_000_000_000_000) {
+      return formatter.format(number / 1_000_000_000_000_000) + "Qt"; // Quadrillion
+    } else if (number >= 1_000_000_000_000) {
+      return formatter.format(number / 1_000_000_000_000) + "T"; // Trillion
+    } else if (number >= 1_000_000_000) {
+      return formatter.format(number / 1_000_000_000) + "B"; // Billion
+    } else if (number >= 1_000_000) {
+      return formatter.format(number / 1_000_000) + "M"; // Million
+    } else if (number >= 1_000) {
+      return formatter.format(number / 1_000) + "K"; // Thousand
+    }
+    return formatter.format(number); // Less than 1,000
+  }
+
   const handleClickBigShape = () => {
     shapesClicked++;
     shapesClicked += multiplier;
@@ -63,15 +86,36 @@
     console.log("multiplier:", multiplier);
   }
   $: level = 0; //test shape change to levels here.
+  $: shapesClicked = 0; //test place value changes to shapes here.
 </script>
 
 <body>
   <main-container>
     <main></main>
-    <main>
+    <main-game>
       <h1>Shape Clicker</h1>
+      <stats-container>
+        <level>Level: {level}</level>
+        {#if level === 1}
+          current Quota:{quota}
+        {:else}
+          Next Quota:{quota}{/if}
+        <h3>+{multiplier} Shapes</h3>
+
+        <p>{formatPlaceValue(shapesClicked)} Shapes</p>
+
+        {#if level === 1 && quota < 46}
+          <prompt-frame in:fly={{ y: 200, duration: 500 }} out:fade>
+            <div id="prompt">
+              Congrats! Youve reached your first quota, this will give you more
+              shapes added onto the ones your already clicking. You get it? ok
+              just keep clicking and ill get out of your hair!
+            </div>
+          </prompt-frame>
+        {/if}
+      </stats-container>
       <svg-handler>
-        {#if level < 5}
+        {#if level < 15}
           <svg
             width="250"
             height="250"
@@ -89,7 +133,7 @@
           >
             <polygon id="" points="125,0 250,250 0,250" fill="#ff6347" />
           </svg>
-        {:else if level >= 5 && level < 15}
+        {:else if level >= 15 && level < 50}
           <svg
             width="250"
             height="250"
@@ -105,7 +149,7 @@
           >
             <rect width="250" height="250" fill="#2196f3" />
           </svg>
-        {:else if level >= 15 && level < 30}
+        {:else if level >= 50 && level < 150}
           <svg
             width="250"
             height="250"
@@ -128,7 +172,7 @@
               fill="#00bcd4"
             ></rect>
           </svg>
-        {:else if level >= 30 && level < 50}
+        {:else if level >= 150 && level < 300}
           <svg
             width="250"
             height="250"
@@ -147,7 +191,7 @@
               fill="#e91e63"
             />
           </svg>
-        {:else if level >= 50 && level < 100}
+        {:else if level >= 300 && level < 500}
           <svg
             width="250"
             height="250"
@@ -169,7 +213,7 @@
               fill="#00bcd4"
             />
           </svg>
-        {:else if level >= 100 && level < 200}
+        {:else if level >= 500 && level < 1000}
           <svg
             width="250"
             height="250"
@@ -211,7 +255,7 @@
               ></svg
             >
           </svg>
-        {:else if level >= 200 && level < 500}
+        {:else if level >= 1000 && level < 2500}
           <svg
             width="250"
             height="250"
@@ -239,7 +283,7 @@
               transform="rotate(0, 0, 0)"
             />
           </svg>
-        {:else if level >= 500}
+        {:else if level >= 2500}
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 800 800"
@@ -330,57 +374,51 @@
           You broke the Gamepad... Somehow.
         {/if}
       </svg-handler>
-    </main>
+    </main-game>
     <main>
-      <stats-container>
-        <level>Level: {level}</level>
+      {#if isOpen}
+        <p>Show me</p>
+      {/if}
 
-        <p>Click to increase Quota and gain more shapes per click</p>
-
-        {#if level === 1}
-          current Quota:{quota}
-        {:else}
-          Next Quota:{quota}
-        {/if}
-
-        <h3>+{multiplier} Shapes</h3>
-
-        <p>Shapes: {shapesClicked}</p>
-
-        <button>Shapes</button>
-
-        <button
-          class="restart-game"
-          on:click={() => {
-            resetGame();
-          }}
-          >Restart the Game
-        </button>
-        {#if quota === 15}
-          <div class="prompt make-prompt-unseen">some Text</div>
-        {:else}
-          <div class="prompt make-prompt-seen">some Text</div>
-        {/if}
-      </stats-container>
+      <button on:click={() => (isOpen = !isOpen)}>Settings</button>
+      <button
+        class="restart-game"
+        on:click={() => {
+          resetGame();
+        }}
+        >Restart the Game
+      </button>
     </main>
   </main-container>
 </body>
 
 <style>
   h1 {
+    margin: 8px;
+    padding: 0;
     color: #ff3e00;
     text-transform: uppercase;
     font-size: 4em;
-    font-weight: 100;
+    font-weight: 400;
   }
-
-  .prompt {
-    visibility: hidden;
+  svg {
+    position: fixed;
+    transform: translate(-50%, 5%);
+    outline: none;
   }
-  .prompt.make-prompt-unseen {
-    visibility: hidden;
+  prompt-frame {
+    position: absolute;
+    width: 50%;
+    z-index: 99;
+    background-color: rgba(226, 232, 236, 0);
   }
-  .prompt.make-prompt-seen {
-    visibility: visible;
+  #prompt {
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.398);
+    text-wrap: wrap;
+    text-align: left;
   }
 </style>

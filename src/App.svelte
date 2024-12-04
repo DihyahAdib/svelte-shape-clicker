@@ -107,9 +107,9 @@
         {#if level === 1 && quota < 46}
           <prompt-frame in:fly={{ y: 200, duration: 500 }} out:fade>
             <div id="prompt">
-              Congrats! Youve reached your first quota, this will give you more
-              shapes added onto the ones your already clicking. You get it? ok
-              just keep clicking and ill get out of your hair!
+              Well done! You will now have more shapes added to the ones you are
+              already clicking on since you have met your initial quota. Do you
+              understand? Okay, just keep clicking, and I'll stop bothering you!
             </div>
           </prompt-frame>
         {/if}
@@ -408,8 +408,9 @@
   }
   prompt-frame {
     position: absolute;
-    width: 50%;
+    width: 34%;
     z-index: 99;
+    transform: translate(0%, 100%);
     background-color: rgba(226, 232, 236, 0);
   }
   #prompt {

@@ -1,23 +1,13 @@
 <!-- app.svelte file -->
 <script lang="ts">
-  export const SHAPES = {
-    TRIANGLE: "TRIANGLE",
-    SQUARE: "SQUARE",
-    PENTAGON: "PENTAGON",
-    HEXAGON: "HEXAGON",
-    HEPTAGON: "HEPTAGON",
-    OCTAGON: "OCTAGON",
-    NONAGON: "NONAGON",
-    DECAGON: "DECAGON",
-  };
-
+  import { fade, fly } from "svelte/transition";
   let level = 0;
-  let startingShape = SHAPES.TRIANGLE;
   let shapesClicked = 0;
   let achievements = 0;
   let multiplier = 0.0;
   let quota = 15;
   let currentQuo = 0;
+  let isOpen = false;
 
   const loadState = () => {
     const savedState = JSON.parse(
@@ -25,7 +15,6 @@
     );
     if (savedState) {
       level = savedState.level;
-      startingShape = savedState.startingShape;
       shapesClicked = savedState.shapesClicked;
       achievements = savedState.achievements;
       multiplier = savedState.multiplier;
@@ -41,7 +30,6 @@
       "currentState",
       JSON.stringify({
         level,
-        startingShape,
         shapesClicked,
         achievements,
         multiplier,
@@ -50,6 +38,27 @@
       })
     );
   };
+
+  function formatPlaceValue(number: number): string {
+    const formatter = new Intl.NumberFormat("en-US", {
+      maximumFractionDigits: 2,
+    });
+
+    if (number >= 1_000_000_000_000_000_000) {
+      return formatter.format(number / 1_000_000_000_000_000_000) + "Qn"; // Quintillion
+    } else if (number >= 1_000_000_000_000_000) {
+      return formatter.format(number / 1_000_000_000_000_000) + "Qt"; // Quadrillion
+    } else if (number >= 1_000_000_000_000) {
+      return formatter.format(number / 1_000_000_000_000) + "T"; // Trillion
+    } else if (number >= 1_000_000_000) {
+      return formatter.format(number / 1_000_000_000) + "B"; // Billion
+    } else if (number >= 1_000_000) {
+      return formatter.format(number / 1_000_000) + "M"; // Million
+    } else if (number >= 1_000) {
+      return formatter.format(number / 1_000) + "K"; // Thousand
+    }
+    return formatter.format(number); // Less than 1,000
+  }
 
   const handleClickBigShape = () => {
     shapesClicked++;
@@ -61,7 +70,6 @@
 
   const resetGame = () => {
     level = 0;
-    startingShape = SHAPES.TRIANGLE;
     shapesClicked = 0;
     achievements = 0;
     multiplier = 0.0;
@@ -75,75 +83,304 @@
     level++;
     multiplier += 0.5;
     console.log("New Quota:", quota);
-    console.log("REAL multiplier", multiplier);
+    console.log("multiplier:", multiplier);
   }
-
-  // $: startingShape = SHAPES.HEXAGON; control the shapes here for now
-
-  const getShapeSvg = (shape: string): string => {
-    switch (shape) {
-      case SHAPES.TRIANGLE:
-        return `<polygon points="125,0 250,250 0,250" fill="#ff6347" />`;
-      case SHAPES.SQUARE:
-        return `<rect width="250" height="250" fill="#2196f3" />`;
-      case SHAPES.PENTAGON:
-        return `<rect
-          transform="translate(0 0) skewX(10) skewY(0)"
-          x="0"
-          y="0"
-          width="210"
-          height="230"
-          fill="#00bcd4"
-        ></rect>`;
-      case SHAPES.HEXAGON:
-        return `<polygon points="125,0 31.25,62.5 31.25,187.5 125,250 218.75,187.5 218.75,62.5" fill="#e91e63" />`;
-      case SHAPES.HEPTAGON:
-        return `<polygon points="125,12.5 173.2,40.8 206.3,95.2 206.3,154.8 173.2,209.2 125,237.5 76.8,209.2 43.7,154.8 43.7,95.2 76.8,40.8" fill="#e91e63" />`;
-      case SHAPES.OCTAGON:
-        return `<polygon points="125,12.5 171.4,12.5 212.5,53.6 212.5,93.6 171.4,134.6 125,134.6 78.6,134.6 37.5,93.6 37.5,53.6 78.6,12.5" fill="#00bcd4" />`;
-      case SHAPES.NONAGON:
-        return `<polygon points="125,12.5 174.7,28.3 212.5,62.5 225,112.5 206.3,162.5 174.7,187.5 125,212.5 75.3,187.5 43.7,162.5 25,112.5 37.5,62.5" fill="#4caf50" />`;
-      case SHAPES.DECAGON:
-        return `<polygon points="125,12.5 160.2,24.5 192.3,54.5 203.5,92.5 192.3,130.5 160.2,160.5 125,172.5 89.8,160.5 57.7,130.5 46.5,92.5 57.7,54.5" fill="#2196f3" />`;
-      default:
-        return `<text x="50%" y="50%" fill="red" text-anchor="middle" alignment-baseline="middle">Unknown Shape</text>`;
-    }
-  };
+  $: level = 0; //test shape change to levels here.
+  $: shapesClicked = 0; //test place value changes to shapes here.
 </script>
 
 <body>
-  <main-left></main-left>
-  <main>
-    <h1>Shape Clicker</h1>
-    <div>
-      <svg width="250" height="250" viewBox="0 0 250 250">
-        $: {@html getShapeSvg(SHAPES.PENTAGON)}
-      </svg>
-    </div>
-  </main>
-  <main-right>
-    <stats-container>
-      <level>Level: {level}</level>
+  <main-container>
+    <main></main>
+    <main-game>
+      <h1>Shape Clicker</h1>
+      <stats-container>
+        <level>Level: {level}</level>
+        {#if level === 1}
+          current Quota:{quota}
+        {:else}
+          Next Quota:{quota}{/if}
+        <h3>+{multiplier} Shapes</h3>
 
-      <p>Click to increase Quota and gain more shapes per click</p>
+        <p>{formatPlaceValue(shapesClicked)} Shapes</p>
 
-      {#if level === 1}
-        current Quota:{quota}
-      {:else}
-        Next Quota:{quota}
+        {#if level === 1 && quota < 46}
+          <prompt-frame in:fly={{ y: 200, duration: 500 }} out:fade>
+            <div id="prompt">
+              Congrats! Youve reached your first quota, this will give you more
+              shapes added onto the ones your already clicking. You get it? ok
+              just keep clicking and ill get out of your hair!
+            </div>
+          </prompt-frame>
+        {/if}
+      </stats-container>
+      <svg-handler>
+        {#if level < 15}
+          <svg
+            width="250"
+            height="250"
+            viewBox="0 0 250 250"
+            tabindex="0"
+            role="button"
+            on:click={() => {
+              handleClickBigShape();
+            }}
+            on:keydown={(event) => {
+              if (event.key === "Enter" || event.key === " ") {
+                handleClickBigShape();
+              }
+            }}
+          >
+            <polygon id="" points="125,0 250,250 0,250" fill="#ff6347" />
+          </svg>
+        {:else if level >= 15 && level < 50}
+          <svg
+            width="250"
+            height="250"
+            viewBox="0 0 250 250"
+            on:click={() => {
+              handleClickBigShape();
+            }}
+            on:keydown={(event) => {
+              if (event.key === "Enter" || event.key === " ") {
+                handleClickBigShape();
+              }
+            }}
+          >
+            <rect width="250" height="250" fill="#2196f3" />
+          </svg>
+        {:else if level >= 50 && level < 150}
+          <svg
+            width="250"
+            height="250"
+            viewBox="0 0 250 250"
+            on:click={() => {
+              handleClickBigShape();
+            }}
+            on:keydown={(event) => {
+              if (event.key === "Enter" || event.key === " ") {
+                handleClickBigShape();
+              }
+            }}
+          >
+            <rect
+              transform="translate(0 0) skewX(10) skewY(0)"
+              x="0"
+              y="0"
+              width="210"
+              height="230"
+              fill="#00bcd4"
+            ></rect>
+          </svg>
+        {:else if level >= 150 && level < 300}
+          <svg
+            width="250"
+            height="250"
+            viewBox="0 0 250 250"
+            on:click={() => {
+              handleClickBigShape();
+            }}
+            on:keydown={(event) => {
+              if (event.key === "Enter" || event.key === " ") {
+                handleClickBigShape();
+              }
+            }}
+          >
+            <polygon
+              points=" 125,0 31.25,62.5 31.25,187.5 125,250  218.75,187.5 218.75,62.5"
+              fill="#e91e63"
+            />
+          </svg>
+        {:else if level >= 300 && level < 500}
+          <svg
+            width="250"
+            height="250"
+            viewBox="0 0 250 250"
+            on:click={() => {
+              handleClickBigShape();
+            }}
+            on:keydown={(event) => {
+              if (event.key === "Enter" || event.key === " ") {
+                handleClickBigShape();
+              }
+            }}
+          >
+            <polygon
+              points=" 125,0 
+      187.5,0  250,62.5  250,187.5  187.5,250 
+      125,250 
+      62.5,250  0,187.5  0,62.5  62.5,0"
+              fill="#00bcd4"
+            />
+          </svg>
+        {:else if level >= 500 && level < 1000}
+          <svg
+            width="250"
+            height="250"
+            viewBox="0 0 250 250"
+            on:click={() => {
+              handleClickBigShape();
+            }}
+            on:keydown={(event) => {
+              if (event.key === "Enter" || event.key === " ") {
+                handleClickBigShape();
+              }
+            }}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              xmlns:xlink="http://www.w3.org/1999/xlink"
+              ><svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="250"
+                height="250"
+                viewBox="-177 -177 354 354"
+                style="overflow: visible;"
+                ><polygon
+                  class="polygon"
+                  points="175,0 134.05777754582115,112.48783169514437 30.38843109171282,172.3413567771364 -87.49999999999996,151.55444566227678 -164.44620863753394,59.85352508199205 -164.44620863753397,-59.85352508199202 -87.50000000000007,-151.55444566227672 30.388431091712746,-172.3413567771364 134.05777754582112,-112.48783169514442 "
+                  fill="#37c8b0"
+                  stroke="#7a7a7a"
+                  stroke-width="0"
+                  transform="rotate(0, 0, 0)"
+                  on:click={() => {
+                    handleClickBigShape();
+                  }}
+                  on:keydown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      handleClickBigShape();
+                    }
+                  }}
+                ></polygon></svg
+              ></svg
+            >
+          </svg>
+        {:else if level >= 1000 && level < 2500}
+          <svg
+            width="250"
+            height="250"
+            viewBox="-177 -177 354 354"
+            on:click={() => {
+              handleClickBigShape();
+            }}
+            on:keydown={(event) => {
+              if (event.key === "Enter" || event.key === " ") {
+                handleClickBigShape();
+              }
+            }}
+          >
+            <defs>
+              <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#d83bbe"></stop>
+                <stop offset="100%" stop-color="#a43d3d"></stop>
+              </linearGradient>
+            </defs>
+            <polygon
+              points="167.5,0 135.5103465578037,98.45402975898925 51.7603465578037,159.30196647943822 -51.76034655780368,159.30196647943825 -135.51034655780367,98.45402975898926 -167.5,2.0512833885718166e-14 -135.51034655780373,-98.45402975898924 -51.760346557803715,-159.30196647943822 51.76034655780366,-159.30196647943825 135.51034655780367,-98.4540297589893 "
+              fill="url(#gradient)"
+              stroke="#7a7a7a"
+              stroke-width="0"
+              transform="rotate(0, 0, 0)"
+            />
+          </svg>
+        {:else if level >= 2500}
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 800 800"
+            on:click={() => {
+              handleClickBigShape();
+            }}
+            on:keydown={(event) => {
+              if (event.key === " " || event.key === " ") {
+                handleClickBigShape();
+              }
+            }}
+            ><defs
+              ><radialGradient
+                id="sssurface-grad-dark"
+                r="75%"
+                cx="20%"
+                cy="20%"
+              >
+                <stop
+                  offset="0%"
+                  stop-color="hsl(351, 100%, 67%)"
+                  stop-opacity="0"
+                ></stop>
+                <stop offset="100%" stop-color="#c61945" stop-opacity="1"
+                ></stop>
+              </radialGradient><radialGradient
+                id="sssurface-grad-light"
+                r="25%"
+                cx="30%"
+                cy="30%"
+              >
+                <stop offset="0%" stop-color="#ff8b9e" stop-opacity="0.75"
+                ></stop>
+                <stop
+                  offset="100%"
+                  stop-color="hsl(351, 100%, 67%)"
+                  stop-opacity="0"
+                ></stop>
+              </radialGradient><filter
+                id="sssurface-blur"
+                x="-100%"
+                y="-100%"
+                width="400%"
+                height="400%"
+                filterUnits="objectBoundingBox"
+                primitiveUnits="userSpaceOnUse"
+                color-interpolation-filters="sRGB"
+              >
+                <feGaussianBlur
+                  stdDeviation="30"
+                  x="0%"
+                  y="0%"
+                  width="100%"
+                  height="100%"
+                  in="SourceGraphic"
+                  edgeMode="none"
+                  result="blur"
+                ></feGaussianBlur></filter
+              ></defs
+            ><g
+              ><ellipse
+                rx="153"
+                ry="76.5"
+                cx="450"
+                cy="500"
+                fill="#8f001f"
+                opacity="0.25"
+                filter="url(#sssurface-blur)"
+              ></ellipse><circle
+                r="153"
+                cx="400"
+                cy="400"
+                fill="hsl(351, 100%, 67%)"
+              ></circle><circle
+                r="153"
+                cx="400"
+                cy="400"
+                fill="url(#sssurface-grad-dark)"
+              ></circle><circle
+                r="153"
+                cx="400"
+                cy="400"
+                fill="url(#sssurface-grad-light)"
+              ></circle></g
+            ></svg
+          >
+        {:else}
+          You broke the Gamepad... Somehow.
+        {/if}
+      </svg-handler>
+    </main-game>
+    <main>
+      {#if isOpen}
+        <p>Show me</p>
       {/if}
 
-      <h3>+{multiplier} Shapes</h3>
-
-      <p>Shapes: {shapesClicked}</p>
-
-      <button
-        on:click={() => {
-          handleClickBigShape();
-        }}
-        >Shapes
-      </button>
-
+      <button on:click={() => (isOpen = !isOpen)}>Settings</button>
       <button
         class="restart-game"
         on:click={() => {
@@ -151,30 +388,37 @@
         }}
         >Restart the Game
       </button>
-      {#if quota === 15}
-        <div class="prompt make-prompt-unseen">some Text</div>
-      {:else}
-        <div class="prompt make-prompt-seen">some Text</div>
-      {/if}
-    </stats-container></main-right
-  >
+    </main>
+  </main-container>
 </body>
 
 <style>
   h1 {
+    margin: 8px;
+    padding: 0;
     color: #ff3e00;
     text-transform: uppercase;
     font-size: 4em;
-    font-weight: 100;
+    font-weight: 400;
   }
-
-  .prompt {
-    visibility: hidden;
+  svg {
+    position: fixed;
+    transform: translate(-50%, 5%);
+    outline: none;
   }
-  .prompt.make-prompt-unseen {
-    visibility: hidden;
+  prompt-frame {
+    position: absolute;
+    width: 50%;
+    z-index: 99;
+    background-color: rgba(226, 232, 236, 0);
   }
-  .prompt.make-prompt-seen {
-    visibility: visible;
+  #prompt {
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.398);
+    text-wrap: wrap;
+    text-align: left;
   }
 </style>

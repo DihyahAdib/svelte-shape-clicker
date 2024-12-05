@@ -55,3 +55,13 @@
     {:else}
       <p>SOME FALLBACK SVG</p>
     {/if}
+
+
+
+          <button on:click={() => (isOpen = !isOpen)}>
+        {#if isOpen}
+          Close Settings
+        {:else}
+          Settings
+        {/if}
+      </button>

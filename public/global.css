@@ -32,8 +32,8 @@ main {
 
 main-game {
 	width: 60%;
-	height: 85vh;
-	padding: 2em;
+	height: 92vh;
+	padding: 0;
 	margin: 1em;
 	text-align: center;
 	color: white;
@@ -44,23 +44,111 @@ main-game {
 
 stats-container {
 	gap: 10px;
-	margin: 10px;
-	padding: 10px;
+	margin: 0;
+	padding: 0;
 	display: flex;
 	flex-direction: column;
 	font-size: 1.2em;
 	font-weight: 500;
 }
 
-button {
-	padding: 0.4em;
-	margin: 0 0 0.5em 0;
-	cursor: pointer;
-	box-sizing: border-box;
-	border: 1px solid #ccc;
-	border-radius: 2px;
+h1 {
+	margin: 8px;
+	padding: 0;
+	color: #ff3e00;
+	text-transform: uppercase;
+	font-size: 4em;
+	font-weight: 400;
 }
 
-button:hover {
+h3 {
+	margin: 8px;
+	padding: 0;
+	color: #ff3e00;
+	text-transform: uppercase;
+	letter-spacing: 5px;
+	font-size: 2em;
+	font-weight: 400;
+}
+
+h4 {
+	margin: 8px;
+	padding: 0;
+	color: #ff0000;
+	text-transform: uppercase;
+	letter-spacing: 5px;
+	font-size: 2em;
+	font-weight: 400;
+}
+
+.btn {
+	padding: 0.6em;
+	margin: 0 0 0.2em 0;
+	width: 50%;
+	cursor: pointer;
+	box-sizing: border-box;
+	border: none;
+	border-radius: 8px;
+}
+
+.btn:hover {
 	background-color: #45a049;
+}
+
+.btn-reset,
+.btn-no-reset {
+	padding: 1em;
+	margin: 0 0 1em 0;
+	width: 50%;
+	height: 50px;
+	cursor: pointer;
+	border: none;
+	border-radius: 12px;
+	color: white;
+}
+
+.btn-reset {
+	background-color: #881700;
+}
+
+.btn-no-reset {
+	background-color: #00883d;
+}
+
+.btn-reset:hover {
+	background-color: #981900;
+	transition: background-color 0.2s ease;
+}
+
+.btn-no-reset:hover {
+	background-color: #00a249;
+	transition: background-color 0.2s ease;
+}
+
+@keyframes spinIn {
+	0% {
+		transform: rotate(0deg);
+	}
+
+	100% {
+		transform: rotate(360deg);
+	}
+}
+
+@keyframes bounce {
+	0% {
+		transform: scale(1);
+	}
+
+	20% {
+		transform: scale(1.05);
+	}
+
+	40% {
+		transform: scale(0.95);
+	}
+
+	100% {
+		transform: scale(1);
+	}
 }

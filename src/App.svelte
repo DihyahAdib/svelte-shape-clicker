@@ -1,13 +1,16 @@
 <!-- app.svelte file -->
 <script lang="ts">
-  import { fade, fly } from "svelte/transition";
+  import { fade, fly, scale } from "svelte/transition";
   let level = 0;
   let shapesClicked = 0;
   let achievements = 0;
   let multiplier = 0.0;
   let quota = 15;
-  let currentQuo = 0;
+
   let isOpen = false;
+  let isBouncing = false;
+  let disableAnimation = false;
+  let showFinalWarning = false;
 
   const loadState = () => {
     const savedState = JSON.parse(
@@ -19,11 +22,20 @@
       achievements = savedState.achievements;
       multiplier = savedState.multiplier;
       quota = savedState.quota;
-      currentQuo = savedState.currentQuo;
     }
   };
 
   loadState();
+
+  const resetGame = () => {
+    level = 0;
+    shapesClicked = 0;
+    achievements = 0;
+    multiplier = 0.0;
+    quota = 15;
+    localStorage.removeItem("currentState");
+    showFinalWarning = false;
+  };
 
   const saveState = () => {
     localStorage.setItem(
@@ -34,9 +46,20 @@
         achievements,
         multiplier,
         quota,
-        currentQuo,
       })
     );
+  };
+
+  const handleRestartClick = () => {
+    showFinalWarning = true; // Show the warning modal
+  };
+
+  const closeWarning = () => {
+    showFinalWarning = false; // Close the warning modal
+  };
+
+  const togglePrompt = () => {
+    isOpen = !isOpen;
   };
 
   function formatPlaceValue(number: number): string {
@@ -64,19 +87,13 @@
     shapesClicked++;
     shapesClicked += multiplier;
     saveState();
+    isBouncing = true;
+    setTimeout(() => {
+      isBouncing = false;
+    }, 100);
   };
 
   $: saveState();
-
-  const resetGame = () => {
-    level = 0;
-    shapesClicked = 0;
-    achievements = 0;
-    multiplier = 0.0;
-    quota = 15;
-    currentQuo = 0;
-    localStorage.removeItem("currentState");
-  };
 
   $: if (shapesClicked >= quota) {
     quota *= 3;
@@ -95,28 +112,32 @@
     <main-game>
       <h1>Shape Clicker</h1>
       <stats-container>
-        <level>Level: {level}</level>
-        {#if level === 1}
-          current Quota:{quota}
-        {:else}
-          Next Quota:{quota}{/if}
-        <h3>+{multiplier} Shapes</h3>
+        <stats>
+          <level>Level: {level}</level>
+          {#if level === 1}
+            current Quota:{quota}
+          {:else}
+            Next Quota:{quota}{/if}
+          <p>+{multiplier} Shapes</p>
 
-        <p>{formatPlaceValue(shapesClicked)} Shapes</p>
-
+          <p>{formatPlaceValue(shapesClicked)} Shapes</p>
+        </stats>
         {#if level === 1 && quota < 46}
-          <prompt-frame in:fly={{ y: 200, duration: 500 }} out:fade>
+          <prompt-frame in:fly={{ y: 180, duration: 600 }} out:fade>
             <div id="prompt">
-              Well done! You will now have more shapes added to the ones you are
-              already clicking on since you have met your initial quota. Do you
-              understand? Okay, just keep clicking, and I'll stop bothering you!
+              <span id="c">Well done!</span> You will now have more shapes added
+              to the ones you are already clicking on since you have met your
+              <span id="c0">initial quota.</span> Do you understand? Okay, just keep
+              clicking, and I'll stop bothering you!
             </div>
           </prompt-frame>
         {/if}
       </stats-container>
+
       <svg-handler>
         {#if level < 15}
           <svg
+            class={isBouncing ? "bouncy" : ""}
             width="250"
             height="250"
             viewBox="0 0 250 250"
@@ -374,45 +395,145 @@
           You broke the Gamepad... Somehow.
         {/if}
       </svg-handler>
+      {#if isOpen}
+        <div id="overlay" transition:fade></div>
+        <settings-frame
+          in:fly={{ y: -250, duration: 600 }}
+          out:fly={{ y: -250, duration: 600 }}
+        >
+          <h3>Settings</h3>
+          <button class="btn" on:click={togglePrompt}>Close</button>
+
+          <button class="btn" on:click={handleRestartClick}
+            >Restart the game</button
+          >
+
+          {#if showFinalWarning}
+            <final-warning transition:scale>
+              <h4>Hold It!</h4>
+              <p>
+                Your about to lose <span id="c1">ALL</span> of your data! This action
+                cannot be undone.
+              </p>
+              <button class="btn-reset" on:click={resetGame}
+                >Yes, restart</button
+              >
+              <button class="btn-no-reset" on:click={closeWarning}
+                >Uhh, Maybe not</button
+              >
+            </final-warning>
+          {/if}
+
+          {#if disableAnimation}
+            <p>Disabled</p>
+          {/if}
+
+          <button
+            class="btn"
+            on:click={() => (disableAnimation = !disableAnimation)}
+            >Disable Animations</button
+          >
+        </settings-frame>
+      {/if}
     </main-game>
     <main>
-      {#if isOpen}
-        <p>Show me</p>
-      {/if}
-
-      <button on:click={() => (isOpen = !isOpen)}>Settings</button>
-      <button
-        class="restart-game"
-        on:click={() => {
-          resetGame();
-        }}
-        >Restart the Game
+      <button id="GC" on:click={togglePrompt}>
+        <svg
+          class="gear {isOpen ? 'spin-in' : ''}"
+          width="50"
+          height="50"
+          viewBox="0 0 50 50"
+          xmlns="http://www.w3.org/2000/svg"
+          ><path
+            d="M25 34c-5 0-9-4-9-9s4-9 9-9 9 4 9 9-4 9-9 9zm0-16c-3.9 0-7 3.1-7 7s3.1 7 7 7 7-3.1 7-7-3.1-7-7-7z"
+          /><path
+            d="M27.7 44h-5.4l-1.5-4.6c-1-.3-2-.7-2.9-1.2l-4.4 2.2-3.8-3.8 2.2-4.4c-.5-.9-.9-1.9-1.2-2.9L6 27.7v-5.4l4.6-1.5c.3-1 .7-2 1.2-2.9l-2.2-4.4 3.8-3.8 4.4 2.2c.9-.5 1.9-.9 2.9-1.2L22.3 6h5.4l1.5 4.6c1 .3 2 .7 2.9 1.2l4.4-2.2 3.8 3.8-2.2 4.4c.5.9.9 1.9 1.2 2.9l4.6 1.5v5.4l-4.6 1.5c-.3 1-.7 2-1.2 2.9l2.2 4.4-3.8 3.8-4.4-2.2c-.9.5-1.9.9-2.9 1.2L27.7 44zm-4-2h2.6l1.4-4.3.5-.1c1.2-.3 2.3-.8 3.4-1.4l.5-.3 4 2 1.8-1.8-2-4 .3-.5c.6-1 1.1-2.2 1.4-3.4l.1-.5 4.3-1.4v-2.6l-4.3-1.4-.1-.5c-.3-1.2-.8-2.3-1.4-3.4l-.3-.5 2-4-1.8-1.8-4 2-.5-.3c-1.1-.6-2.2-1.1-3.4-1.4l-.5-.1L26.3 8h-2.6l-1.4 4.3-.5.1c-1.2.3-2.3.8-3.4 1.4l-.5.3-4-2-1.8 1.8 2 4-.3.5c-.6 1-1.1 2.2-1.4 3.4l-.1.5L8 23.7v2.6l4.3 1.4.1.5c.3 1.2.8 2.3 1.4 3.4l.3.5-2 4 1.8 1.8 4-2 .5.3c1.1.6 2.2 1.1 3.4 1.4l.5.1 1.4 4.3z"
+          /></svg
+        >
       </button>
     </main>
   </main-container>
 </body>
 
 <style>
-  h1 {
-    margin: 8px;
-    padding: 0;
-    color: #ff3e00;
-    text-transform: uppercase;
-    font-size: 4em;
-    font-weight: 400;
+  #c {
+    color: yellow;
   }
-  svg {
+  #c0 {
+    color: bisque;
+  }
+  #c1 {
+    color: red;
+  }
+  svg-handler {
     position: fixed;
     transform: translate(-50%, 5%);
-    outline: none;
   }
+
+  svg {
+    transform-origin: center;
+    outline: none;
+    cursor: pointer;
+  }
+
   prompt-frame {
     position: absolute;
     width: 34%;
-    z-index: 99;
-    transform: translate(0%, 100%);
+    transform: translate(5%, 100%);
     background-color: rgba(226, 232, 236, 0);
+    z-index: 20;
   }
+
+  #overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.28);
+    z-index: 10;
+  }
+
+  settings-frame {
+    position: fixed;
+    border-radius: 14px;
+    width: 30%;
+    height: 50%;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+    padding-left: 10px;
+    padding-right: 10px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.9);
+    z-index: 20;
+  }
+
+  #GC {
+    width: 50px;
+    height: 50px;
+    padding: 0;
+    margin: 0;
+    border-radius: 50%;
+    border: none;
+    background-color: rgba(255, 255, 255, 0.924);
+  }
+
+  .gear {
+    width: 40px;
+    height: 40px;
+    stroke: #004cff;
+    transition: transform 0.3s ease;
+  }
+
+  .gear.spin-in {
+    animation: spinIn 0.3s linear;
+  }
+
   #prompt {
     background: rgba(0, 0, 0, 0.8);
     color: white;
@@ -421,5 +542,39 @@
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.398);
     text-wrap: wrap;
     text-align: left;
+  }
+
+  .bouncy {
+    animation: bounce 0.4s ease-in-out;
+  }
+
+  final-warning {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40%;
+    background-color: rgb(71, 71, 71);
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.6);
+    z-index: 30;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  final-warning p {
+    margin-bottom: 20px;
+  }
+
+  stats {
+    display: flex;
+    height: 10%;
+    background-color: rgba(0, 0, 0, 0.3);
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
   }
 </style>

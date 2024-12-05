@@ -102,15 +102,16 @@
     console.log("New Quota:", quota);
     console.log("multiplier:", multiplier);
   }
-  $: level = 0; //test shape change to levels here.
+  $: level = 1; //test shape change to levels here.
   $: shapesClicked = 0; //test place value changes to shapes here.
 </script>
 
 <body>
   <main-container>
-    <main></main>
-    <main-game>
+    <main>
       <h1>Shape Clicker</h1>
+    </main>
+    <main-game>
       <stats-container>
         <stats>
           <level>Level: {level}</level>
@@ -395,6 +396,7 @@
           You broke the Gamepad... Somehow.
         {/if}
       </svg-handler>
+
       {#if isOpen}
         <div id="overlay" transition:fade></div>
         <settings-frame
@@ -465,9 +467,12 @@
   #c1 {
     color: red;
   }
+  /* #c2 {
+    color: #401006;
+  } */
   svg-handler {
-    position: fixed;
-    transform: translate(-50%, 5%);
+    position: relative;
+    transform: translate(0%, 0%);
   }
 
   svg {

@@ -123,22 +123,26 @@
 
 <body>
   <main-container>
-    <main></main>
+    <main id="left">.</main>
     <main-game>
       <main-game-container>
         <stats-container>
           <stats>
             <p id="c2">{formatPlaceValue(shapesClicked)} Shapes</p>
-            <p>+{multiplier} Shapes</p>
+            <p id="c3">+{multiplier} Shapes</p>
           </stats>
           {#if level === 1 && quota < 46}
-            <prompt-frame in:fly={{ y: 180, duration: 600 }} out:fade>
+            <prompt-frame
+              class="popup arrow"
+              in:fly={{ y: 180, duration: 600 }}
+              out:fade
+            >
               <div id="prompt">
                 <span id="c">Well done!</span> You will now have more shapes
                 added to the ones you are already clicking on since you have met
                 your
-                <span id="c0">initial quota.</span> Do you understand? Okay, just
-                keep clicking, and I'll stop bothering you!
+                <span id="c0">initial quota</span>. Do you understand? Okay,
+                just keep clicking, and I'll get outta ya hair!
               </div>
             </prompt-frame>
           {/if}
@@ -180,10 +184,10 @@
             out:fly={{ y: -250, duration: 600 }}
           >
             <h3>Settings</h3>
-            <button class="btn" on:click={togglePrompt}>Close</button>
+            <button class="" id="X" on:click={togglePrompt}>X</button>
 
             <button class="btn" on:click={handleRestartClick}
-              >Restart the game</button
+              >Restart Game</button
             >
 
             {#if showFinalWarning}
@@ -191,7 +195,7 @@
                 <h4>Hold It!</h4>
                 <p class="Quick">
                   Your about to lose <span id="c1">ALL</span> of your data! This
-                  action cannot be undone.
+                  action <span id="c1">CANNOT</span> be undone.
                 </p>
                 <button class="btn-reset" on:click={resetGame}
                   >Yes, restart</button
@@ -215,27 +219,29 @@
         {/if}
       </main-game-container>
     </main-game>
-    <main>
+    <main id="right">
       <p id="c0">Shape Clicker<span>&trade;</span></p>
-      <button id="GC" on:click={togglePrompt}>
-        <svg
-          class="gear {isOpen ? 'spin-in' : ''}"
-          width="50"
-          height="50"
-          viewBox="0 0 50 50"
-          xmlns="http://www.w3.org/2000/svg"
-          ><path
-            d="M25 34c-5 0-9-4-9-9s4-9 9-9 9 4 9 9-4 9-9 9zm0-16c-3.9 0-7 3.1-7 7s3.1 7 7 7 7-3.1 7-7-3.1-7-7-7z"
-          /><path
-            d="M27.7 44h-5.4l-1.5-4.6c-1-.3-2-.7-2.9-1.2l-4.4 2.2-3.8-3.8 2.2-4.4c-.5-.9-.9-1.9-1.2-2.9L6 27.7v-5.4l4.6-1.5c.3-1 .7-2 1.2-2.9l-2.2-4.4 3.8-3.8 4.4 2.2c.9-.5 1.9-.9 2.9-1.2L22.3 6h5.4l1.5 4.6c1 .3 2 .7 2.9 1.2l4.4-2.2 3.8 3.8-2.2 4.4c.5.9.9 1.9 1.2 2.9l4.6 1.5v5.4l-4.6 1.5c-.3 1-.7 2-1.2 2.9l2.2 4.4-3.8 3.8-4.4-2.2c-.9.5-1.9.9-2.9 1.2L27.7 44zm-4-2h2.6l1.4-4.3.5-.1c1.2-.3 2.3-.8 3.4-1.4l.5-.3 4 2 1.8-1.8-2-4 .3-.5c.6-1 1.1-2.2 1.4-3.4l.1-.5 4.3-1.4v-2.6l-4.3-1.4-.1-.5c-.3-1.2-.8-2.3-1.4-3.4l-.3-.5 2-4-1.8-1.8-4 2-.5-.3c-1.1-.6-2.2-1.1-3.4-1.4l-.5-.1L26.3 8h-2.6l-1.4 4.3-.5.1c-1.2.3-2.3.8-3.4 1.4l-.5.3-4-2-1.8 1.8 2 4-.3.5c-.6 1-1.1 2.2-1.4 3.4l-.1.5L8 23.7v2.6l4.3 1.4.1.5c.3 1.2.8 2.3 1.4 3.4l.3.5-2 4 1.8 1.8 4-2 .5.3c1.1.6 2.2 1.1 3.4 1.4l.5.1 1.4 4.3z"
-          /></svg
-        >
-      </button>
-      <level>Level: {level}</level>
-      {#if level === 1}
-        current Quota:{quota}
-      {:else}
-        Next Quota:{quota}{/if}
+      <stats-container-right>
+        <button id="GC" on:click={togglePrompt}>
+          <svg
+            class="gear {isOpen ? 'spin-in' : ''}"
+            width="50"
+            height="50"
+            viewBox="0 0 50 50"
+            xmlns="http://www.w3.org/2000/svg"
+            ><path
+              d="M25 34c-5 0-9-4-9-9s4-9 9-9 9 4 9 9-4 9-9 9zm0-16c-3.9 0-7 3.1-7 7s3.1 7 7 7 7-3.1 7-7-3.1-7-7-7z"
+            /><path
+              d="M27.7 44h-5.4l-1.5-4.6c-1-.3-2-.7-2.9-1.2l-4.4 2.2-3.8-3.8 2.2-4.4c-.5-.9-.9-1.9-1.2-2.9L6 27.7v-5.4l4.6-1.5c.3-1 .7-2 1.2-2.9l-2.2-4.4 3.8-3.8 4.4 2.2c.9-.5 1.9-.9 2.9-1.2L22.3 6h5.4l1.5 4.6c1 .3 2 .7 2.9 1.2l4.4-2.2 3.8 3.8-2.2 4.4c.5.9.9 1.9 1.2 2.9l4.6 1.5v5.4l-4.6 1.5c-.3 1-.7 2-1.2 2.9l2.2 4.4-3.8 3.8-4.4-2.2c-.9.5-1.9.9-2.9 1.2L27.7 44zm-4-2h2.6l1.4-4.3.5-.1c1.2-.3 2.3-.8 3.4-1.4l.5-.3 4 2 1.8-1.8-2-4 .3-.5c.6-1 1.1-2.2 1.4-3.4l.1-.5 4.3-1.4v-2.6l-4.3-1.4-.1-.5c-.3-1.2-.8-2.3-1.4-3.4l-.3-.5 2-4-1.8-1.8-4 2-.5-.3c-1.1-.6-2.2-1.1-3.4-1.4l-.5-.1L26.3 8h-2.6l-1.4 4.3-.5.1c-1.2.3-2.3.8-3.4 1.4l-.5.3-4-2-1.8 1.8 2 4-.3.5c-.6 1-1.1 2.2-1.4 3.4l-.1.5L8 23.7v2.6l4.3 1.4.1.5c.3 1.2.8 2.3 1.4 3.4l.3.5-2 4 1.8 1.8 4-2 .5.3c1.1.6 2.2 1.1 3.4 1.4l.5.1 1.4 4.3z"
+            /></svg
+          >
+        </button>
+        <level>Level: {level}</level>
+        {#if level === 1}
+          current Quota:{quota}
+        {:else}
+          Next Quota:{quota}{/if}
+      </stats-container-right>
     </main>
   </main-container>
 </body>
@@ -259,25 +265,32 @@
 
   main-game {
     color: hsl(0, 0%, 40%);
-    font: 400 16px/1.5 var(--Exo);
     text-align: center;
     background: url($bg-url) repeat 0 0;
-    animation: bg-scrolling-reverse 2.8s infinite;
+    animation: bg-scrolling-reverse 0s infinite; /* 2 seconds turn off for no pc fans */
     animation-timing-function: linear;
 
     &::before {
       content: "SHAPE CLICKER";
-
+      font-family: var(--Exo);
       font-size: 4rem;
       font-weight: 700;
     }
 
     p#c2 {
       margin: 0;
-      padding: 5px 0 0 5px;
-      text-align: start;
-      font-size: 18px;
+      padding: 10px 0 5px 0;
+      font-size: 25px;
       font-weight: 900;
+      font-family: var(--Comfort);
+      color: hsl(0, 0%, 0%);
+    }
+    p#c3 {
+      margin: 0;
+      padding: 5px 0 10px 0;
+      font-size: 15px;
+      font-weight: 900;
+      font-family: var(--Comfort);
       color: hsl(0, 0%, 10%);
     }
   }

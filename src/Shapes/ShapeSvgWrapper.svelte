@@ -45,7 +45,7 @@
     cursor: pointer;
   }
   .shape-spin {
-    animation: spin 25s linear infinite;
-    display: inline-block;
+    animation: spin 0s linear infinite; /* 70 seconds turn off to save my pcs life */
+    display: inline-block; /* finish turn off animations setting */
   }
 </style>

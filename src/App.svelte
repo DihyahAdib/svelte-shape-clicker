@@ -10,6 +10,7 @@
   import Circle from "./Shapes/Circle.svelte";
   import ShapeSvgWrapper from "./Shapes/ShapeSvgWrapper.svelte";
   import { fade, fly, scale } from "svelte/transition";
+
   let level = 0;
   let shapesClicked = 0;
   let achievements = 0;
@@ -122,104 +123,100 @@
 
 <body>
   <main-container>
-    <main>
-      <h1>Shape Clicker</h1>
-    </main>
+    <main></main>
     <main-game>
-      <stats-container>
-        <stats>
-          <level>Level: {level}</level>
-          {#if level === 1}
-            current Quota:{quota}
-          {:else}
-            Next Quota:{quota}{/if}
-          <p>+{multiplier} Shapes</p>
+      <main-game-container>
+        <stats-container>
+          <stats>
+            <p id="c2">{formatPlaceValue(shapesClicked)} Shapes</p>
+            <p>+{multiplier} Shapes</p>
+          </stats>
+          {#if level === 1 && quota < 46}
+            <prompt-frame in:fly={{ y: 180, duration: 600 }} out:fade>
+              <div id="prompt">
+                <span id="c">Well done!</span> You will now have more shapes
+                added to the ones you are already clicking on since you have met
+                your
+                <span id="c0">initial quota.</span> Do you understand? Okay, just
+                keep clicking, and I'll stop bothering you!
+              </div>
+            </prompt-frame>
+          {/if}
+        </stats-container>
 
-          <p>{formatPlaceValue(shapesClicked)} Shapes</p>
-        </stats>
-        {#if level === 1 && quota < 46}
-          <prompt-frame in:fly={{ y: 180, duration: 600 }} out:fade>
-            <div id="prompt">
-              <span id="c">Well done!</span> You will now have more shapes added
-              to the ones you are already clicking on since you have met your
-              <span id="c0">initial quota.</span> Do you understand? Okay, just keep
-              clicking, and I'll stop bothering you!
-            </div>
-          </prompt-frame>
+        <svg-handler>
+          <ShapeSvgWrapper
+            on:clickOrkeyDown={handleClickBigShape}
+            width={getShapeDimensions().width}
+            height={getShapeDimensions().height}
+            viewBox={getShapeDimensions().viewBox}
+          >
+            {#if level < 15}
+              <Triangle />
+            {:else if level >= 15 && level < 50}
+              <Square />
+            {:else if level >= 50 && level < 150}
+              <Parallelogram />
+            {:else if level >= 150 && level < 300}
+              <Hexagon />
+            {:else if level >= 300 && level < 500}
+              <Octagon />
+            {:else if level >= 500 && level < 1000}
+              <Nonagon />
+            {:else if level >= 1000 && level < 2500}
+              <Decagon />
+            {:else if level >= 2500}
+              <Circle />
+            {:else}
+              You broke the Game... Somehow.
+            {/if}
+          </ShapeSvgWrapper>
+        </svg-handler>
+
+        {#if isOpen}
+          <div id="overlay" transition:fade></div>
+          <settings-frame
+            in:fly={{ y: -250, duration: 600 }}
+            out:fly={{ y: -250, duration: 600 }}
+          >
+            <h3>Settings</h3>
+            <button class="btn" on:click={togglePrompt}>Close</button>
+
+            <button class="btn" on:click={handleRestartClick}
+              >Restart the game</button
+            >
+
+            {#if showFinalWarning}
+              <final-warning transition:scale>
+                <h4>Hold It!</h4>
+                <p class="Quick">
+                  Your about to lose <span id="c1">ALL</span> of your data! This
+                  action cannot be undone.
+                </p>
+                <button class="btn-reset" on:click={resetGame}
+                  >Yes, restart</button
+                >
+                <button class="btn-no-reset" on:click={closeWarning}
+                  >Uhh, Maybe not</button
+                >
+              </final-warning>
+            {/if}
+
+            {#if disableAnimation}
+              <p>Disabled</p>
+            {/if}
+
+            <button
+              class="btn"
+              on:click={() => (disableAnimation = !disableAnimation)}
+              >Disable Animations</button
+            >
+          </settings-frame>
         {/if}
-      </stats-container>
-
-      <svg-handler>
-        <ShapeSvgWrapper
-          on:clickOrkeyDown={handleClickBigShape}
-          width={getShapeDimensions().width}
-          height={getShapeDimensions().height}
-          viewBox={getShapeDimensions().viewBox}
-        >
-          {#if level < 15}
-            <Triangle />
-          {:else if level >= 15 && level < 50}
-            <Square />
-          {:else if level >= 50 && level < 150}
-            <Parallelogram />
-          {:else if level >= 150 && level < 300}
-            <Hexagon />
-          {:else if level >= 300 && level < 500}
-            <Octagon />
-          {:else if level >= 500 && level < 1000}
-            <Nonagon />
-          {:else if level >= 1000 && level < 2500}
-            <Decagon />
-          {:else if level >= 2500}
-            <Circle />
-          {:else}
-            You broke the Gamepad... Somehow.
-          {/if}
-        </ShapeSvgWrapper>
-      </svg-handler>
-
-      {#if isOpen}
-        <div id="overlay" transition:fade></div>
-        <settings-frame
-          in:fly={{ y: -250, duration: 600 }}
-          out:fly={{ y: -250, duration: 600 }}
-        >
-          <h3>Settings</h3>
-          <button class="btn" on:click={togglePrompt}>Close</button>
-
-          <button class="btn" on:click={handleRestartClick}
-            >Restart the game</button
-          >
-
-          {#if showFinalWarning}
-            <final-warning transition:scale>
-              <h4>Hold It!</h4>
-              <p>
-                Your about to lose <span id="c1">ALL</span> of your data! This action
-                cannot be undone.
-              </p>
-              <button class="btn-reset" on:click={resetGame}
-                >Yes, restart</button
-              >
-              <button class="btn-no-reset" on:click={closeWarning}
-                >Uhh, Maybe not</button
-              >
-            </final-warning>
-          {/if}
-
-          {#if disableAnimation}
-            <p>Disabled</p>
-          {/if}
-
-          <button
-            class="btn"
-            on:click={() => (disableAnimation = !disableAnimation)}
-            >Disable Animations</button
-          >
-        </settings-frame>
-      {/if}
+      </main-game-container>
     </main-game>
     <main>
+      <p id="c0">Shape Clicker<span>&trade;</span></p>
       <button id="GC" on:click={togglePrompt}>
         <svg
           class="gear {isOpen ? 'spin-in' : ''}"
@@ -234,129 +231,54 @@
           /></svg
         >
       </button>
+      <level>Level: {level}</level>
+      {#if level === 1}
+        current Quota:{quota}
+      {:else}
+        Next Quota:{quota}{/if}
     </main>
   </main-container>
 </body>
 
-<style>
-  #c {
-    color: yellow;
+<style lang="scss">
+  $bg-url: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAIAAACRXR/mAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAIGNIUk0AAHolAACAgwAA+f8AAIDpAAB1MAAA6mAAADqYAAAXb5JfxUYAAABnSURBVHja7M5RDYAwDEXRDgmvEocnlrQS2SwUFST9uEfBGWs9c97nbGtDcquqiKhOImLs/UpuzVzWEi1atGjRokWLFi1atGjRokWLFi1atGjRokWLFi1af7Ukz8xWp8z8AAAA//8DAJ4LoEAAlL1nAAAAAElFTkSuQmCC";
+  $bg-width: 50px;
+  $bg-height: 50px;
+
+  /* Animations */
+  @keyframes bg-scrolling-reverse {
+    100% {
+      background-position: $bg-width $bg-height;
+    }
   }
-  #c0 {
-    color: bisque;
-  }
-  #c1 {
-    color: red;
-  }
-  /* #c2 {
-    color: #401006;
-  } */
-  svg-handler {
-    position: relative;
-    transform: translate(0%, 0%);
+  @keyframes bg-scrolling {
+    0% {
+      background-position: $bg-width $bg-height;
+    }
   }
 
-  svg {
-    transform-origin: center;
-    outline: none;
-    cursor: pointer;
-  }
+  main-game {
+    color: hsl(0, 0%, 40%);
+    font: 400 16px/1.5 var(--Exo);
+    text-align: center;
+    background: url($bg-url) repeat 0 0;
+    animation: bg-scrolling-reverse 2.8s infinite;
+    animation-timing-function: linear;
 
-  prompt-frame {
-    position: absolute;
-    width: 34%;
-    transform: translate(5%, 100%);
-    background-color: rgba(226, 232, 236, 0);
-    z-index: 20;
-  }
+    &::before {
+      content: "SHAPE CLICKER";
 
-  #overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(0, 0, 0, 0.28);
-    z-index: 10;
-  }
+      font-size: 4rem;
+      font-weight: 700;
+    }
 
-  settings-frame {
-    position: fixed;
-    border-radius: 14px;
-    width: 30%;
-    height: 50%;
-    color: white;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-evenly;
-    align-items: center;
-    padding-left: 10px;
-    padding-right: 10px;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: rgba(0, 0, 0, 0.9);
-    z-index: 20;
-  }
-
-  #GC {
-    width: 50px;
-    height: 50px;
-    padding: 0;
-    margin: 0;
-    border-radius: 50%;
-    border: none;
-    background-color: rgba(255, 255, 255, 0.924);
-  }
-
-  .gear {
-    width: 40px;
-    height: 40px;
-    stroke: #004cff;
-    transition: transform 0.3s ease;
-  }
-
-  .gear.spin-in {
-    animation: spinIn 0.3s linear;
-  }
-
-  #prompt {
-    background: rgba(0, 0, 0, 0.8);
-    color: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.398);
-    text-wrap: wrap;
-    text-align: left;
-  }
-
-  final-warning {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 40%;
-    background-color: rgb(71, 71, 71);
-    border-radius: 14px;
-    padding: 20px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.6);
-    z-index: 30;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-  }
-
-  final-warning p {
-    margin-bottom: 20px;
-  }
-
-  stats {
-    display: flex;
-    height: 10%;
-    background-color: rgba(0, 0, 0, 0.3);
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
+    p#c2 {
+      margin: 0;
+      padding: 5px 0 0 5px;
+      text-align: start;
+      font-size: 18px;
+      font-weight: 900;
+      color: hsl(0, 0%, 10%);
+    }
   }
 </style>

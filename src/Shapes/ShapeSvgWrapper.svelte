@@ -1,3 +1,4 @@
+<!--ShapeSvgWrapper-->
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
   export let width: number | string | undefined = 250;
@@ -10,32 +11,41 @@
     isBouncing = true;
     setTimeout(() => {
       isBouncing = false;
-    }, 100);
+    }, 400);
   };
 </script>
 
-<svg
-  class={isBouncing ? "bouncy" : ""}
-  xmlns="http://www.w3.org/2000/svg"
-  {width}
-  {height}
-  {viewBox}
-  style="overflow: visible;"
-  type="button"
-  on:click={() => {
-    handleClickBigShape();
-  }}
-  on:keydown={(event) => {
-    if (event.key === " ") {
+<div class="shape-spin">
+  <svg
+    class={isBouncing ? "bouncy" : ""}
+    xmlns="http://www.w3.org/2000/svg"
+    {width}
+    {height}
+    {viewBox}
+    style="overflow: visible;"
+    type="button"
+    on:click={() => {
       handleClickBigShape();
-    }
-  }}
->
-  <slot>Forgot shape here</slot></svg
->
+    }}
+    on:keydown={(event) => {
+      if (event.key === " ") {
+        handleClickBigShape();
+      }
+    }}
+  >
+    <slot>Forgot shape here</slot></svg
+  >
+</div>
 
 <style>
   .bouncy {
     animation: bounce 0.4s ease-in-out;
+  }
+  svg {
+    cursor: pointer;
+  }
+  .shape-spin {
+    animation: spin 25s linear infinite;
+    display: inline-block;
   }
 </style>

@@ -9,6 +9,10 @@
   import Decagon from "./Shapes/Decagon.svelte";
   import Circle from "./Shapes/Circle.svelte";
   import ShapeSvgWrapper from "./Shapes/ShapeSvgWrapper.svelte";
+  import {
+    disableAnimationForShapes,
+    toggleSpinAnimation,
+  } from "./disableAnimation";
   import { fade, fly, scale } from "svelte/transition";
 
   let level = 0;
@@ -18,7 +22,8 @@
   let quota = 15;
 
   let isOpen = false;
-  let disableAnimation = false;
+  let disableAnimationForBg = false;
+  $: disableAnimationForShapes;
   let showFinalWarning = false;
 
   const loadState = () => {
@@ -124,7 +129,7 @@
 <body>
   <main-container>
     <main id="left">.</main>
-    <main-game>
+    <main-game class={disableAnimationForBg === true ? "bgAnimation" : ""}>
       <main-game-container>
         <stats-container>
           <stats>
@@ -183,38 +188,60 @@
             in:fly={{ y: -250, duration: 600 }}
             out:fly={{ y: -250, duration: 600 }}
           >
-            <h3>Settings</h3>
-            <button class="" id="X" on:click={togglePrompt}>X</button>
+            <setting-items>
+              <ul>
+                <li><a href="#Top">Settings</a></li>
+                <li><a href="#Gen">General</a></li>
+                <li><a href="#Aff">Affects</a></li>
+                <li><a href="#Stats">Stats</a></li>
+              </ul>
+              <h3 id="Top">Settings</h3>
+              <button class="" id="X" on:click={togglePrompt}>X</button>
 
-            <button class="btn" on:click={handleRestartClick}
-              >Restart Game</button
-            >
+              <h4 id="Gen">General</h4>
+              <button class="btn" on:click={handleRestartClick}
+                >Restart Game</button
+              >
+              <h4>Affects</h4>
+              <p id="Aff">Disable Animations here.</p>
+              {#if showFinalWarning}
+                <final-warning transition:scale>
+                  <h4>Hold It!</h4>
+                  <p class="Quick">
+                    Your about to lose <span id="c1">ALL</span> of your data!
+                    This action <span id="c1">CANNOT</span> be undone.
+                  </p>
+                  <button class="btn-reset" on:click={resetGame}
+                    >Yes, restart</button
+                  >
+                  <button class="btn-no-reset" on:click={closeWarning}
+                    >Uhh, Maybe not</button
+                  >
+                </final-warning>
+              {/if}
 
-            {#if showFinalWarning}
-              <final-warning transition:scale>
-                <h4>Hold It!</h4>
-                <p class="Quick">
-                  Your about to lose <span id="c1">ALL</span> of your data! This
-                  action <span id="c1">CANNOT</span> be undone.
-                </p>
-                <button class="btn-reset" on:click={resetGame}
-                  >Yes, restart</button
-                >
-                <button class="btn-no-reset" on:click={closeWarning}
-                  >Uhh, Maybe not</button
-                >
-              </final-warning>
-            {/if}
+              <button class="btn butn" on:click={toggleSpinAnimation}
+                >Disable Shape</button
+              >
+              {#if $disableAnimationForShapes}
+                <p>Enabled</p>
+              {:else}
+                <p>Disabled</p>
+              {/if}
 
-            {#if disableAnimation}
-              <p>Disabled</p>
-            {/if}
-
-            <button
-              class="btn"
-              on:click={() => (disableAnimation = !disableAnimation)}
-              >Disable Animations</button
-            >
+              <button
+                class="btn butn"
+                on:click={() =>
+                  (disableAnimationForBg = !disableAnimationForBg)}
+                >Disable Background</button
+              >
+              {#if disableAnimationForBg}
+                <h6>Enabled</h6>
+              {:else}
+                <h6>Disabled</h6>
+              {/if}
+              <h4 id="Stats">Stats & Data</h4>
+            </setting-items>
           </settings-frame>
         {/if}
       </main-game-container>
@@ -269,29 +296,51 @@
     background: url($bg-url) repeat 0 0;
     animation: bg-scrolling-reverse 0s infinite; /* 2 seconds turn off for no pc fans */
     animation-timing-function: linear;
-
     &::before {
       content: "SHAPE CLICKER";
       font-family: var(--Exo);
       font-size: 4rem;
       font-weight: 700;
     }
-
-    p#c2 {
-      margin: 0;
-      padding: 10px 0 5px 0;
-      font-size: 25px;
-      font-weight: 900;
-      font-family: var(--Comfort);
-      color: hsl(0, 0%, 0%);
+  }
+  main-game.bgAnimation {
+    color: hsl(0, 0%, 40%);
+    text-align: center;
+    background: url($bg-url) repeat 0 0;
+    animation: bg-scrolling-reverse 2s infinite; /* 2 seconds turn off for no pc fans */
+    animation-timing-function: linear;
+    &::before {
+      content: "SHAPE CLICKER";
+      font-family: var(--Exo);
+      font-size: 4rem;
+      font-weight: 700;
     }
-    p#c3 {
-      margin: 0;
-      padding: 5px 0 10px 0;
-      font-size: 15px;
-      font-weight: 900;
+  }
+  ul {
+    position: fixed;
+    text-align: start;
+    display: flex;
+    top: 0;
+    gap: 10px;
+    margin: 15px;
+    padding: 10px;
+    background: rgb(146, 163, 177);
+    border-radius: 10px;
+    list-style-type: none;
+
+    li {
+      padding: 0;
       font-family: var(--Comfort);
-      color: hsl(0, 0%, 10%);
+      transform: scale(1);
+      transition: transform 0.3s ease;
+      a {
+        text-decoration: none;
+        color: whitesmoke;
+        z-index: 100;
+      }
+    }
+    li:hover {
+      transform: scale(1.1); /* Correct hover transform */
     }
   }
 </style>

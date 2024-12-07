@@ -44,6 +44,24 @@ main-game {
 	text-align: center;
 	color: white;
 	border-radius: 10px;
+
+	p#c2 {
+		margin: 0;
+		padding: 10px 0 5px 0;
+		font-size: 25px;
+		font-weight: 900;
+		font-family: var(--Comfort);
+		color: hsl(0, 0%, 0%);
+	}
+
+	p#c3 {
+		margin: 0;
+		padding: 5px 0 10px 0;
+		font-size: 15px;
+		font-weight: 900;
+		font-family: var(--Comfort);
+		color: hsl(0, 0%, 10%);
+	}
 }
 
 #left {
@@ -131,21 +149,33 @@ prompt-frame {
 
 settings-frame {
 	position: fixed;
-	border-radius: 14px;
+	margin: 0;
+	padding: 0;
 	width: 30%;
 	height: 50%;
-	color: white;
-	display: flex;
-	flex-direction: column;
-	justify-content: space-evenly;
-	align-items: center;
-	padding-left: 10px;
-	padding-right: 10px;
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
+	border-radius: 14px;
+	color: white;
 	background-color: rgba(0, 0, 0, 0.9);
 	z-index: 20;
+}
+
+setting-items {
+	display: flex;
+	height: 100%;
+	flex-direction: column;
+	justify-content: space-evenly;
+	align-items: center;
+	scroll-behavior: smooth;
+	scrollbar-color: rgba(0, 0, 0, 0);
+	scroll-snap-type: proximity;
+	overflow-y: scroll;
+	overflow-x: hidden;
+	scrollbar-width: none;
+	/* Firefox */
+	-ms-overflow-style: none;
 }
 
 #GC {
@@ -200,6 +230,11 @@ stats {
 	animation: spin 0.3s linear;
 }
 
+stats-container-right {
+	display: flex;
+}
+
+
 /* Text Styling  */
 h3 {
 	margin: 8px;
@@ -212,10 +247,14 @@ h3 {
 	font-family: var(--Quick);
 }
 
+h3#Top {
+	padding-top: 50px;
+}
+
 h4 {
 	margin: 0;
-	padding: 0;
-	color: #ff0000;
+	padding: 15px 0 10px 0;
+	color: #005194;
 	text-transform: uppercase;
 	letter-spacing: 5px;
 	font-size: 2em;
@@ -243,6 +282,14 @@ p.Quick {
 	font-family: var(--Quick);
 }
 
+p#Aff {
+	margin: 0;
+	padding: 0;
+	font-weight: 500;
+	font-size: 19px;
+	font-family: var(--Quick);
+}
+
 #c {
 	color: yellow;
 }
@@ -255,12 +302,13 @@ p.Quick {
 /* Button Styling */
 
 .btn {
-	padding: 0;
-	margin: 0;
+	padding-left: 10px;
+	padding-right: 10px;
+	margin-top: 0;
+	min-height: 50px;
 	width: 40%;
 	height: 16%;
 	cursor: pointer;
-	box-sizing: border-box;
 	border: none;
 	border-radius: 10px;
 	letter-spacing: 2px;
@@ -271,6 +319,10 @@ p.Quick {
 
 .btn:hover {
 	background-color: #45a088;
+}
+
+.butn {
+	margin-top: 25px;
 }
 
 #X {
@@ -353,4 +405,12 @@ p.Quick {
 	100% {
 		transform: scale(1);
 	}
+}
+
+.bouncy {
+	animation: bounce 0.4s ease-in-out;
+}
+
+svg {
+	cursor: pointer;
 }

@@ -1,8 +1,8 @@
 <!--ShapeSvgWrapper-->
 <script lang="ts">
+  import { onMount } from "svelte";
   import { createEventDispatcher } from "svelte";
   import { disableAnimationForShapes } from "../disableAnimation";
-
   export let width: number | string | undefined = 250;
   export let height: number | string | undefined = 250;
   export let viewBox = "0 0 250 250";
@@ -13,10 +13,10 @@
 
   const handleClickBigShape = () => {
     dispatch("clickOrkeyDown");
-    isBouncing = true;
+    isBouncing = false;
     setTimeout(() => {
-      isBouncing = false;
-    }, 400);
+      isBouncing = true;
+    }, 0);
   };
 </script>
 

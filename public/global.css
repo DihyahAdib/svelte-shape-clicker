@@ -94,7 +94,7 @@ stats-container {
 prompt-frame {
 	position: absolute;
 	width: 37%;
-	transform: translate(2.85%, 60%);
+	transform: translate(2.85%, 80%);
 	border-radius: 10px;
 	background-color: rgba(0, 0, 0, 0);
 	z-index: 20;
@@ -170,12 +170,9 @@ setting-items {
 	align-items: center;
 	scroll-behavior: smooth;
 	scrollbar-color: rgba(0, 0, 0, 0);
-	scroll-snap-type: proximity;
 	overflow-y: scroll;
 	overflow-x: hidden;
 	scrollbar-width: none;
-	/* Firefox */
-	-ms-overflow-style: none;
 }
 
 #GC {
@@ -236,7 +233,19 @@ stats-container-right {
 
 
 /* Text Styling  */
-h3 {
+
+hold-it {
+	margin: 0;
+	padding: 15px 0 10px 0;
+	color: #b2005c;
+	text-transform: uppercase;
+	letter-spacing: 5px;
+	font-size: 2em;
+	font-weight: 900;
+	font-family: var(--Quick);
+}
+
+top {
 	margin: 8px;
 	padding: 0;
 	color: #ff3e00;
@@ -247,10 +256,6 @@ h3 {
 	font-family: var(--Quick);
 }
 
-h3#Top {
-	padding-top: 50px;
-}
-
 h4 {
 	margin: 0;
 	padding: 15px 0 10px 0;
@@ -258,6 +263,12 @@ h4 {
 	text-transform: uppercase;
 	letter-spacing: 5px;
 	font-size: 2em;
+	font-weight: 600;
+	font-family: var(--Quick);
+}
+
+h6 {
+	font-size: 0.9em;
 	font-weight: 600;
 	font-family: var(--Quick);
 }
@@ -282,9 +293,11 @@ p.Quick {
 	font-family: var(--Quick);
 }
 
-p#Aff {
+p.Aff {
 	margin: 0;
 	padding: 0;
+	padding-bottom: 10px;
+	white-space: 15px;
 	font-weight: 500;
 	font-size: 19px;
 	font-family: var(--Quick);
@@ -298,16 +311,18 @@ p#Aff {
 	color: red;
 }
 
+#Down {
+	color: #00000000;
+}
 
 /* Button Styling */
 
 .btn {
 	padding-left: 10px;
 	padding-right: 10px;
-	margin-top: 0;
-	min-height: 50px;
-	width: 40%;
-	height: 16%;
+	margin: 0;
+	min-height: 70px;
+	width: 38%;
 	cursor: pointer;
 	border: none;
 	border-radius: 10px;
@@ -315,6 +330,10 @@ p#Aff {
 	font-size: 20px;
 	font-weight: 700;
 	font-family: var(--Quick);
+}
+
+.btn:last-child {
+	margin-bottom: 30px;
 }
 
 .btn:hover {

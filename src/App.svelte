@@ -22,7 +22,7 @@
   let quota = 15;
 
   let isOpen = false;
-  let disableAnimationForBg = false;
+  let disableAnimationForBg = true;
   $: disableAnimationForShapes;
   let showFinalWarning = false;
 
@@ -36,6 +36,11 @@
       achievements = savedState.achievements;
       multiplier = savedState.multiplier;
       quota = savedState.quota;
+      disableAnimationForBg = savedState.disableAnimationForBg;
+
+      disableAnimationForShapes.set(
+        JSON.parse(localStorage.getItem("disableAnimationForShapes") ?? "true")
+      );
     }
   };
 
@@ -47,8 +52,11 @@
     achievements = 0;
     multiplier = 0.0;
     quota = 15;
-    localStorage.removeItem("currentState");
     showFinalWarning = false;
+    disableAnimationForBg = true;
+    disableAnimationForShapes.set(true);
+    localStorage.removeItem("disableAnimationForShapes");
+    localStorage.removeItem("currentState");
   };
 
   const saveState = () => {
@@ -61,6 +69,10 @@
         multiplier,
         quota,
       })
+    );
+    localStorage.setItem(
+      "disableAnimationForShapes",
+      JSON.stringify($disableAnimationForShapes)
     );
   };
 
@@ -190,23 +202,25 @@
           >
             <setting-items>
               <ul>
-                <li><a href="#Top">Settings</a></li>
+                <li><a href="#Top">Back Up</a></li>
                 <li><a href="#Gen">General</a></li>
                 <li><a href="#Aff">Affects</a></li>
                 <li><a href="#Stats">Stats</a></li>
+                <li><a href="#Down">Bottom</a></li>
               </ul>
-              <h3 id="Top">Settings</h3>
+              <top id="Top">Settings</top>
+              <p class="Aff">All settings will save automatically.</p>
               <button class="" id="X" on:click={togglePrompt}>X</button>
 
               <h4 id="Gen">General</h4>
               <button class="btn" on:click={handleRestartClick}
                 >Restart Game</button
               >
-              <h4>Affects</h4>
-              <p id="Aff">Disable Animations here.</p>
+              <h4 id="Aff">Affects</h4>
+              <p class="Aff">Disable Animations here.</p>
               {#if showFinalWarning}
                 <final-warning transition:scale>
-                  <h4>Hold It!</h4>
+                  <hold-it>Hold It!</hold-it>
                   <p class="Quick">
                     Your about to lose <span id="c1">ALL</span> of your data!
                     This action <span id="c1">CANNOT</span> be undone.
@@ -224,9 +238,9 @@
                 >Disable Shape</button
               >
               {#if $disableAnimationForShapes}
-                <p>Enabled</p>
+                <h6>Enabled</h6>
               {:else}
-                <p>Disabled</p>
+                <h6>Disabled</h6>
               {/if}
 
               <button
@@ -240,7 +254,17 @@
               {:else}
                 <h6>Disabled</h6>
               {/if}
+
               <h4 id="Stats">Stats & Data</h4>
+              <p class="Aff">These dont do anything yet...</p>
+              <button class="btn butn">Reset Shapes</button>
+
+              <button class="btn butn">Reset Additional Shapes</button>
+
+              <button class="btn butn">Reset Level</button>
+
+              <button class="btn butn">Reset Quota</button>
+              <h4 id="Down">.</h4>
             </setting-items>
           </settings-frame>
         {/if}
@@ -320,13 +344,17 @@
     position: fixed;
     text-align: start;
     display: flex;
-    top: 0;
+    top: -1;
+    right: 0;
     gap: 10px;
     margin: 15px;
     padding: 10px;
+    width: 15%;
     background: rgb(146, 163, 177);
     border-radius: 10px;
     list-style-type: none;
+    flex-direction: column;
+    align-items: center;
 
     li {
       padding: 0;
@@ -340,7 +368,11 @@
       }
     }
     li:hover {
-      transform: scale(1.1); /* Correct hover transform */
+      transform: scale(1.1);
+      /* Correct hover transform */
+    }
+    a:hover {
+      color: bisque;
     }
   }
 </style>

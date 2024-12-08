@@ -1,10 +1,17 @@
 // disableAnimation ts file
 import { writable } from 'svelte/store';
+export async function wait(ms: number) {
+    await new Promise((resolve) => setTimeout(resolve, ms));
+}
 
-// Create a writable store for the disableAnimationForShapes variable
-export const disableAnimationForShapes = writable(false);
+export const disableAnimationForShapes = writable(
+    JSON.parse(localStorage.getItem('disableAnimationForShapes') ?? 'true')
+);
 
-// Create a function to toggle the store value
 export function toggleSpinAnimation() {
-    disableAnimationForShapes.update(value => !value);
+    disableAnimationForShapes.update(value => {
+        const newValue = !value;
+        localStorage.setItem('disableAnimationForShapes', JSON.stringify(newValue));
+        return newValue;
+    });
 }

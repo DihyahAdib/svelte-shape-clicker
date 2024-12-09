@@ -315,7 +315,7 @@
   }
 
   main-game {
-    color: hsl(0, 0%, 40%);
+    color: hsl(0, 0%, 20%);
     text-align: center;
     background: url($bg-url) repeat 0 0;
     animation: bg-scrolling-reverse 0s infinite; /* 2 seconds turn off for no pc fans */
@@ -327,6 +327,7 @@
       font-weight: 700;
     }
   }
+
   main-game.bgAnimation {
     color: hsl(0, 0%, 40%);
     text-align: center;
@@ -344,12 +345,13 @@
     position: fixed;
     text-align: start;
     display: flex;
-    top: -1;
-    right: 0;
+    top: 25px;
+    right: -5px;
     gap: 10px;
     margin: 15px;
     padding: 10px;
     width: 15%;
+    height: 31%;
     background: rgb(146, 163, 177);
     border-radius: 10px;
     list-style-type: none;

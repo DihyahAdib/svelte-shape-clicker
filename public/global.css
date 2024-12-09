@@ -66,6 +66,7 @@ main-game {
 
 
 #left {
+	color: white;
 	background-image: url(/rrreplicate1.svg);
 	background-size: cover;
 }

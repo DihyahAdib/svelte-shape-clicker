@@ -17,7 +17,6 @@
 
   let level = 0;
   let shapesClicked = 0;
-  let achievements = 0;
   let multiplier = 0;
   let quota = 15;
 
@@ -32,7 +31,6 @@
     if (savedState) {
       level = savedState.level;
       shapesClicked = savedState.shapesClicked;
-      achievements = savedState.achievements;
       multiplier = savedState.multiplier;
       quota = savedState.quota;
       disableAnimationForBg = savedState.disableAnimationForBg;
@@ -43,15 +41,12 @@
     }
   };
 
-  loadState();
-
   const saveState = () => {
     localStorage.setItem(
       "currentState",
       JSON.stringify({
         level,
         shapesClicked,
-        achievements,
         multiplier,
         quota,
         disableAnimationForBg,
@@ -64,12 +59,9 @@
     );
   };
 
-  saveState();
-
   const resetGame = () => {
     level = 0;
     shapesClicked = 0;
-    achievements = 0;
     multiplier = 0;
     quota = 15;
     showFinalWarning = false;
@@ -125,12 +117,12 @@
     saveState();
   }
   const handleRestartClick = () => {
-    showFinalWarning = true; // Show the warning modal
+    showFinalWarning = true;
     saveState();
   };
 
   const closeWarning = () => {
-    showFinalWarning = false; // Close the warning modal
+    showFinalWarning = false;
     saveState();
   };
 
@@ -139,12 +131,63 @@
     saveState();
   };
 
+  let achievements = [
+    {
+      name: "A cute, Angle",
+      description: "Click the triangle for the first time",
+      unlocked: false,
+      conditions: () => level > 0 && shapesClicked > 5,
+    },
+    {
+      name: "Geθ Neθ",
+      description: "Reached A total of 50 clicks",
+      unlocked: false,
+      conditions: () => level > 0 && shapesClicked > 49,
+    },
+    {
+      name: "90 Degree Avenue",
+      description: "Reach the square shape",
+      unlocked: false,
+      conditions: () => level > 15 && shapesClicked > 1000,
+    },
+    {
+      name: "Just keep clicking buddy",
+      description: "keep it movin",
+      unlocked: false,
+      conditions: () => level > 300 && shapesClicked > 20000,
+    },
+    {
+      name: "hmm...",
+      description: "HMMMM...",
+      unlocked: false,
+      conditions: () => level > 2500 && shapesClicked > 500000,
+    },
+  ];
+
+  $: {
+    achievements = achievements.map((achievement) => ({
+      ...achievement,
+      unlocked: achievement.conditions ? achievement.conditions() : true,
+    }));
+  }
+  console.log(achievements);
+  loadState();
   $: saveState();
 </script>
 
 <body>
   <main-container>
-    <main id="left">.</main>
+    <main id="left">
+      {#each achievements as achievement (achievement.name)}
+        {#if achievement.conditions()}
+          <div>
+            <h2>{achievement.name}</h2>
+            <p>{achievement.description}</p>
+            {achievement.unlocked ? "Unlocked!" : "Locked"}
+          </div>
+        {/if}
+      {/each}
+    </main>
     <main-game class={disableAnimationForBg === true ? "bgAnimation" : ""}>
       <main-game-container>
         <stats-container>

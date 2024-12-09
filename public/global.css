@@ -496,6 +496,10 @@ body {
 		grid-template-rows: 100% 100%;
 	}
 
+	svg-handler {
+		transform: translate(10%, 128%);
+	}
+
 	#left {
 		display: none;
 		visibility: none;

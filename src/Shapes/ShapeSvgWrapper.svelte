@@ -1,6 +1,5 @@
 <!--ShapeSvgWrapper-->
 <script lang="ts">
-  import { onMount } from "svelte";
   import { createEventDispatcher } from "svelte";
   import { disableAnimationForShapes } from "../disableAnimation";
   export let width: number | string | undefined = 250;

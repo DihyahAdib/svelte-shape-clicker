@@ -48,7 +48,7 @@ main-game {
 	p#c2 {
 		margin: 0;
 		padding: 10px 0 5px 0;
-		font-size: 25px;
+		font-size: 30px;
 		font-weight: 900;
 		font-family: var(--Comfort);
 		color: hsl(0, 0%, 0%);
@@ -63,6 +63,7 @@ main-game {
 		color: hsl(0, 0%, 10%);
 	}
 }
+
 
 #left {
 	background-image: url(/rrreplicate1.svg);
@@ -152,7 +153,7 @@ settings-frame {
 	margin: 0;
 	padding: 0;
 	width: 30%;
-	height: 50%;
+	height: 52%;
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
@@ -227,13 +228,19 @@ stats {
 	animation: spin 0.3s linear;
 }
 
+stat-wrapper {
+	display: flex;
+	justify-content: center;
+}
+
 stats-container-right {
 	display: flex;
 	padding: 10px;
 	background-color: hsl(0, 0%, 80%);
 	border-radius: 25px;
+	width: 90%;
 	text-align: center;
-	font-weight: 500;
+	font-weight: 600;
 	font-size: 24px;
 	font-family: var(--Quick);
 	align-items: center;
@@ -241,6 +248,32 @@ stats-container-right {
 	align-content: center;
 	flex-direction: column;
 	flex-wrap: wrap;
+}
+
+general,
+affects,
+stats-data {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+general {
+	width: 60%;
+	margin-top: 45px;
+	margin-bottom: 45px;
+}
+
+affects {
+	width: 60%;
+	margin-top: 45px;
+	margin-bottom: 45px;
+}
+
+stats-data {
+	width: 60%;
+	margin-top: 45px;
+	margin-bottom: 45px;
 }
 
 
@@ -269,7 +302,8 @@ top {
 }
 
 h4 {
-	margin: 0;
+	margin-top: 0px;
+	margin-bottom: 0px;
 	padding: 15px 0 10px 0;
 	color: #005194;
 	text-transform: uppercase;
@@ -332,9 +366,10 @@ p.Aff {
 .btn {
 	padding-left: 10px;
 	padding-right: 10px;
-	margin: 0;
+	margin-top: 12px;
+	margin-bottom: 12px;
 	min-height: 70px;
-	width: 38%;
+	width: 58%;
 	cursor: pointer;
 	border: none;
 	border-radius: 10px;
@@ -350,10 +385,6 @@ p.Aff {
 
 .btn:hover {
 	background-color: #45a088;
-}
-
-.butn {
-	margin-top: 25px;
 }
 
 #X {
@@ -444,4 +475,41 @@ p.Aff {
 
 svg {
 	cursor: pointer;
+}
+
+body {
+	container-type: inline-size;
+}
+
+@container (width < 430px) {
+	body {
+		width: 100%;
+		height: 100%;
+		display: grid;
+		grid-template-rows: 50% 100%;
+		overflow: hidden;
+		transform: translate(-5%, 0%);
+	}
+
+	main-container {
+		display: grid;
+		grid-template-rows: 100% 100%;
+	}
+
+	#left {
+		display: none;
+		visibility: none;
+	}
+
+	main-game {
+		width: 100%;
+		height: 100%;
+		grid-row: 1;
+	}
+
+	#right {
+		width: 100%;
+		height: 100%;
+		grid-row: 2;
+	}
 }

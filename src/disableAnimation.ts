@@ -5,7 +5,7 @@ export async function wait(ms: number) {
 }
 
 export const disableAnimationForShapes = writable(
-    JSON.parse(localStorage.getItem('disableAnimationForShapes') ?? 'true')
+    JSON.parse(localStorage.getItem('disableAnimationForShapes') ?? 'false')
 );
 
 export function toggleSpinAnimation() {
@@ -15,3 +15,4 @@ export function toggleSpinAnimation() {
         return newValue;
     });
 }
+

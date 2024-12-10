@@ -173,7 +173,7 @@
     if (level >= 1 && shapesClicked >= 50) achievements[1].unlocked = true;
     if (level >= 15 && shapesClicked >= 1000) achievements[2].unlocked = true;
     if (level >= 300 && shapesClicked >= 20000) achievements[3].unlocked = true;
-    if (level >= 2500 && shapesClicked >= 500000)
+    if (level >= 2500 && shapesClicked >= 50000)
       achievements[4].unlocked = true;
   }
 

@@ -41,9 +41,8 @@ main-game {
 	height: 92vh;
 	padding: 0;
 	margin: 1em;
-	text-align: center;
-	color: white;
 	border-radius: 10px;
+	background-color: #004cff;
 
 	p#c2 {
 		margin: 0;

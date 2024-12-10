@@ -19,6 +19,7 @@
     name: string;
     description: string;
     unlocked: boolean;
+    condition: () => boolean;
   };
 
   let level = 0;
@@ -146,35 +147,40 @@
       name: "A cute, Angle",
       description: "Click the triangle for the first time",
       unlocked: false,
+      condition: () => level >= 0 && shapesClicked >= 5,
     },
     {
       name: "Geθ Neθ",
       description: "Reached A total of 50 clicks",
       unlocked: false,
+      condition: () => level >= 1 && shapesClicked >= 50,
     },
     {
       name: "90 Degree Avenue",
       description: "Reach the square shape",
       unlocked: false,
+      condition: () => level >= 15 && shapesClicked >= 1000,
     },
     {
       name: "Just keep clicking buddy",
       description: "keep it movin",
       unlocked: false,
+      condition: () => level >= 300 && shapesClicked >= 10000,
     },
     {
       name: "hmm...",
       description: "HMMMM...",
       unlocked: false,
+      condition: () => level >= 2500 && shapesClicked >= 100000,
     },
   ];
+
   function updateAchievements() {
-    if (level >= 0 && shapesClicked >= 5) achievements[0].unlocked = true;
-    if (level >= 1 && shapesClicked >= 50) achievements[1].unlocked = true;
-    if (level >= 15 && shapesClicked >= 1000) achievements[2].unlocked = true;
-    if (level >= 300 && shapesClicked >= 20000) achievements[3].unlocked = true;
-    if (level >= 2500 && shapesClicked >= 50000)
-      achievements[4].unlocked = true;
+    for (const achievement of achievements) {
+      if (!achievement.unlocked && achievement.condition()) {
+        achievement.unlocked = true;
+      }
+    }
   }
 
   $: updateAchievements();
@@ -221,7 +227,9 @@
         </div>
       {/if}
     </main>
-    <main-game class={disableAnimationForBg === true ? "bgAnimation" : ""}>
+    <main-game
+      class={`${disableAnimationForBg === true ? "bgAnimation" : ""} gradient`}
+    >
       <main-game-container>
         <stats-container>
           <stats>
@@ -417,6 +425,9 @@
       font-size: 4rem;
       font-weight: 700;
     }
+  }
+  main-game.graident {
+    background-color: black;
   }
 
   main-game.bgAnimation {

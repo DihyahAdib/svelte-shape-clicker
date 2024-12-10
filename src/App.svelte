@@ -15,8 +15,15 @@
   } from "./disableAnimation";
   import { fade, fly, scale } from "svelte/transition";
 
+  type Achievement = {
+    name: string;
+    description: string;
+    unlocked: boolean;
+  };
+
   let level = 0;
   let shapesClicked = 0;
+  let ach: Achievement[] = [];
   let multiplier = 0;
   let quota = 15;
 
@@ -31,6 +38,7 @@
     if (savedState) {
       level = savedState.level;
       shapesClicked = savedState.shapesClicked;
+      ach = savedState.ach || [...achievements];
       multiplier = savedState.multiplier;
       quota = savedState.quota;
       disableAnimationForBg = savedState.disableAnimationForBg;
@@ -47,6 +55,7 @@
       JSON.stringify({
         level,
         shapesClicked,
+        ach,
         multiplier,
         quota,
         disableAnimationForBg,
@@ -62,6 +71,7 @@
   const resetGame = () => {
     level = 0;
     shapesClicked = 0;
+    ach = [...achievements];
     multiplier = 0;
     quota = 15;
     showFinalWarning = false;
@@ -131,46 +141,43 @@
     saveState();
   };
 
-  let achievements = [
+  let achievements: Achievement[] = [
     {
       name: "A cute, Angle",
       description: "Click the triangle for the first time",
       unlocked: false,
-      conditions: () => level > 0 && shapesClicked > 5,
     },
     {
       name: "Geθ Neθ",
       description: "Reached A total of 50 clicks",
       unlocked: false,
-      conditions: () => level > 0 && shapesClicked > 49,
     },
     {
       name: "90 Degree Avenue",
       description: "Reach the square shape",
       unlocked: false,
-      conditions: () => level > 15 && shapesClicked > 1000,
     },
     {
       name: "Just keep clicking buddy",
       description: "keep it movin",
       unlocked: false,
-      conditions: () => level > 300 && shapesClicked > 20000,
     },
     {
       name: "hmm...",
       description: "HMMMM...",
       unlocked: false,
-      conditions: () => level > 2500 && shapesClicked > 500000,
     },
   ];
-
-  $: {
-    achievements = achievements.map((achievement) => ({
-      ...achievement,
-      unlocked: achievement.conditions ? achievement.conditions() : true,
-    }));
+  function updateAchievements() {
+    if (level >= 0 && shapesClicked >= 5) achievements[0].unlocked = true;
+    if (level >= 1 && shapesClicked >= 50) achievements[1].unlocked = true;
+    if (level >= 15 && shapesClicked >= 1000) achievements[2].unlocked = true;
+    if (level >= 300 && shapesClicked >= 20000) achievements[3].unlocked = true;
+    if (level >= 2500 && shapesClicked >= 500000)
+      achievements[4].unlocked = true;
   }
-  console.log(achievements);
+
+  $: updateAchievements();
   loadState();
   $: saveState();
 </script>
@@ -178,15 +185,41 @@
 <body>
   <main-container>
     <main id="left">
-      {#each achievements as achievement (achievement.name)}
-        {#if achievement.conditions()}
-          <div>
-            <h2>{achievement.name}</h2>
-            <p>{achievement.description}</p>
-            {achievement.unlocked ? "Unlocked!" : "Locked"}
-          </div>
-        {/if}
-      {/each}
+      {#if level >= 0 && shapesClicked >= 5}
+        <div>
+          <h2>{achievements[0].name}</h2>
+          <p>{achievements[0].description}</p>
+          {achievements[0].unlocked ? "Unlocked!" : "Locked"}
+        </div>
+      {/if}
+      {#if level >= 1 && shapesClicked >= 50}
+        <div>
+          <h2>{achievements[1].name}</h2>
+          <p>{achievements[1].description}</p>
+          {achievements[1].unlocked ? "Unlocked!" : "Locked"}
+        </div>
+      {/if}
+      {#if level >= 15 && shapesClicked >= 1000}
+        <div>
+          <h2>{achievements[2].name}</h2>
+          <p>{achievements[2].description}</p>
+          {achievements[2].unlocked ? "Unlocked!" : "Locked"}
+        </div>
+      {/if}
+      {#if level >= 300 && shapesClicked >= 20000}
+        <div>
+          <h2>{achievements[3].name}</h2>
+          <p>{achievements[3].description}</p>
+          {achievements[3].unlocked ? "Unlocked!" : "Locked"}
+        </div>
+      {/if}
+      {#if level >= 2500 && shapesClicked >= 500000}
+        <div>
+          <h2>{achievements[4].name}</h2>
+          <p>{achievements[4].description}</p>
+          {achievements[4].unlocked ? "Unlocked!" : "Locked"}
+        </div>
+      {/if}
     </main>
     <main-game class={disableAnimationForBg === true ? "bgAnimation" : ""}>
       <main-game-container>

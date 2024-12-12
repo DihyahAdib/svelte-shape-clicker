@@ -1,17 +1,20 @@
 <!--ShapeSvgWrapper-->
-<script lang="ts">
-  import { createEventDispatcher } from "svelte";
+<script>
   import { disableAnimationForShapes } from "../disableAnimation";
-  export let width: number | string | undefined = 250;
-  export let height: number | string | undefined = 250;
-  export let viewBox = "0 0 250 250";
-  let isBouncing = false;
-  $: disableAnimationForShapes;
 
-  const dispatch = createEventDispatcher();
+  // Variables and props
+  let width = 250;
+  let height = 250;
+  let viewBox = "0 0 250 250";
+  let { inflate, children } = $props();
+  let isBouncing = $state(false);
+
+  $effect(() => {
+    disableAnimationForShapes;
+  });
 
   const handleClickBigShape = () => {
-    dispatch("clickOrkeyDown");
+    inflate("clickOrkeyDown");
     isBouncing = false;
     setTimeout(() => {
       isBouncing = true;
@@ -26,22 +29,19 @@
     {width}
     {height}
     {viewBox}
-    style="overflow: visible;"
-    type="button"
-    on:click={() => {
-      handleClickBigShape();
-    }}
-    on:keydown={(event) => {
-      if (event.key === " ") {
-        handleClickBigShape();
-      }
-    }}
+    onclick={handleClickBigShape}
+    onkeydown={handleClickBigShape}
+    role="button"
+    tabindex="0"
   >
-    <slot>Forgot shape here</slot></svg
+    {#if children}{@render children()}{:else}Forgot shape here{/if}</svg
   >
 </svg-animation>
 
 <style>
+  svg {
+    overflow: visible;
+  }
   svg-animation {
     animation: spin 0s linear infinite;
     display: inline-block;

@@ -1,5 +1,5 @@
 <!-- app.svelte file -->
-<script lang="ts">
+<script>
   import Triangle from "./Shapes/Triangle.svelte";
   import Square from "./Shapes/Square.svelte";
   import Parallelogram from "./Shapes/Parallelogram.svelte";
@@ -15,22 +15,15 @@
   } from "./disableAnimation";
   import { fade, fly, scale } from "svelte/transition";
 
-  type Achievement = {
-    name: string;
-    description: string;
-    unlocked: boolean;
-    condition: () => boolean;
-  };
+  let level = $state(0);
+  let shapesClicked = $state(0);
+  let ach = [];
+  let multiplier = $state(0);
+  let quota = $state(15);
 
-  let level = 0;
-  let shapesClicked = 0;
-  let ach: Achievement[] = [];
-  let multiplier = 0;
-  let quota = 15;
-
-  let isOpen = false;
-  let disableAnimationForBg = true;
-  let showFinalWarning = false;
+  let isOpen = $state(false);
+  let disableAnimationForBg = $state(true);
+  let showFinalWarning = $state(false);
 
   const loadState = () => {
     const savedState = JSON.parse(
@@ -92,7 +85,7 @@
     }
   };
 
-  function formatPlaceValue(number: number) {
+  function formatPlaceValue(number) {
     const formatter = new Intl.NumberFormat("en-US", {
       maximumFractionDigits: 2,
     });
@@ -119,14 +112,16 @@
     saveState();
   };
 
-  $: if (shapesClicked >= quota) {
-    quota *= 3;
-    level++;
-    multiplier += 0.5;
-    console.log("New Quota:", quota);
-    console.log("multiplier:", multiplier);
-    saveState();
-  }
+  $effect(() => {
+    if (shapesClicked >= quota) {
+      quota *= 3;
+      level++;
+      multiplier += 0.5;
+      console.log("New Quota:", quota);
+      console.log("multiplier:", multiplier);
+      saveState();
+    }
+  });
   const handleRestartClick = () => {
     showFinalWarning = true;
     saveState();
@@ -142,7 +137,12 @@
     saveState();
   };
 
-  let achievements: Achievement[] = [
+  const toggleBG = () => {
+    disableAnimationForBg = !disableAnimationForBg;
+    saveState();
+  };
+
+  let achievements = [
     {
       name: "A cute, Angle",
       description: "Click the triangle for the first time",
@@ -183,9 +183,13 @@
     }
   }
 
-  $: updateAchievements();
+  $effect(() => {
+    updateAchievements();
+  });
   loadState();
-  $: saveState();
+  $effect(() => {
+    saveState();
+  });
 </script>
 
 <body>
@@ -298,11 +302,11 @@
               </ul>
               <top id="Top">Settings</top>
               <p class="Aff">All settings will save automatically.</p>
-              <button class="" id="X" on:click={togglePrompt}>X</button>
+              <button class="" id="X" onclick={togglePrompt}>X</button>
 
               <general>
                 <h4 id="Gen">General</h4>
-                <button class="btn" on:click={handleRestartClick}
+                <button class="btn" onclick={handleRestartClick}
                   >Restart Game</button
                 >
                 <button class="btn">Clear achievements</button>
@@ -319,16 +323,16 @@
                       Your about to lose <span id="c1">ALL</span> of your data!
                       This action <span id="c1">CANNOT</span> be undone.
                     </p>
-                    <button class="btn-reset" on:click={resetGame}
+                    <button class="btn-reset" onclick={resetGame}
                       >Yes, restart</button
                     >
-                    <button class="btn-no-reset" on:click={closeWarning}
+                    <button class="btn-no-reset" onclick={closeWarning}
                       >Uhh, Maybe not</button
                     >
                   </final-warning>
                 {/if}
 
-                <button class="btn" on:click={toggleSpinAnimation}
+                <button class="btn" onclick={toggleSpinAnimation}
                   >Disable Shape</button
                 >
                 {#if $disableAnimationForShapes}
@@ -337,10 +341,7 @@
                   <h6>Disabled</h6>
                 {/if}
 
-                <button
-                  class="btn"
-                  on:click={() =>
-                    (disableAnimationForBg = !disableAnimationForBg)}
+                <button class="btn" onclick={toggleBG}
                   >Disable Background</button
                 >
                 {#if disableAnimationForBg}
@@ -371,7 +372,7 @@
       <p id="c0">Shape Clicker<span>&trade;</span></p>
       <stat-wrapper>
         <stats-container-right>
-          <button id="GC" on:click={togglePrompt}>
+          <button aria-label="Settings" id="GC" onclick={togglePrompt}>
             <svg
               class="gear {isOpen ? 'spin-in' : ''}"
               width="50"
@@ -426,10 +427,6 @@
       font-weight: 700;
     }
   }
-  main-game.graident {
-    background-color: black;
-  }
-
   main-game.bgAnimation {
     color: hsl(0, 0%, 40%);
     text-align: center;
